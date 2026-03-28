@@ -46,13 +46,89 @@ return [
 ];
 ```
 
-## Executor Contract
+## Build Your Own Workflow Jobs
+
+### 1. Create a step executor
+
+Each workflow "job" is a step type mapped to an executor class.
+
+```php
+<?php
+
+namespace App\Workflow\Executors;
+
+use Briefley\WorkflowBuilder\Contracts\WorkflowStepExecutor;
+use Briefley\WorkflowBuilder\DTO\StepExecutionResult;
+use Briefley\WorkflowBuilder\Models\WorkflowRunStep;
+use Illuminate\Support\Facades\Log;
+
+class SendReportStepExecutor implements WorkflowStepExecutor
+{
+    public function execute(WorkflowRunStep $runStep): StepExecutionResult
+    {
+        // Run your business logic here (API call, file export, DB work, etc).
+        Log::info('Report step executed', [
+            'workflow_run_id' => $runStep->workflow_run_id,
+            'workflow_run_step_id' => $runStep->id,
+        ]);
+
+        return StepExecutionResult::succeeded(meta: [
+            'report_id' => 123,
+        ]);
+    }
+}
+```
+
+### 2. Return one of the supported step results
 
 Each step executor must implement:
 
 - `Briefley\WorkflowBuilder\Contracts\WorkflowStepExecutor`
 
-and return `Briefley\WorkflowBuilder\DTO\StepExecutionResult` from `execute()`.
+and return `Briefley\WorkflowBuilder\DTO\StepExecutionResult` from `execute()`:
+
+- `StepExecutionResult::succeeded(...)` for completed steps.
+- `StepExecutionResult::failed('reason')` to fail the run.
+- `StepExecutionResult::waiting(...)` for async polling-style steps.
+
+### 3. Register your step type in config
+
+Add your label and executor to `config/workflow-builder.php`:
+
+```php
+return [
+    'workflow_jobs' => [
+        'send_report_job' => [
+            'label' => 'Send Report Job',
+        ],
+    ],
+
+    'step_executors' => [
+        'send_report_job' => App\Workflow\Executors\SendReportStepExecutor::class,
+    ],
+];
+```
+
+The `step_executors` key is the runtime source of truth.  
+The `workflow_jobs` key is used for friendly labels in UI selectors.
+
+### 4. Add the step in Filament
+
+1. Open **Workflows**.
+2. Create or edit a workflow.
+3. In the **Steps** relation manager, add a row with your step type.
+4. Order steps by sequence.
+
+### 5. Run scheduler + queue worker
+
+The package dispatches due workflows from the scheduler, and steps execute in queue jobs.
+
+```bash
+php artisan schedule:work
+php artisan queue:work
+```
+
+If you use Horizon, run Horizon instead of `queue:work`.
 
 ## Scheduler
 
