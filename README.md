@@ -138,6 +138,15 @@ and return `Briefley\WorkflowBuilder\DTO\StepExecutionResult` from `execute()`:
 - `StepExecutionResult::failed('reason')` to fail the run.
 - `StepExecutionResult::waiting(...)` for async polling-style steps.
 
+### 2.1 Production reliability tips
+
+When implementing real jobs, these two patterns help avoid common production failures:
+
+- Make retryable steps idempotent.
+  Persist processed item identifiers (for example email addresses, external IDs, or row hashes) in step `meta`, and skip already-processed items on retry.
+- Avoid `dev`-only runtime dependencies in executors.
+  If your executor uses optional helpers/libraries (for example Faker), provide a fallback path so production installs with `--no-dev` do not crash.
+
 ### 3. Register your step type in config
 
 Add your label and executor to `config/workflow-builder.php`:
