@@ -1,0 +1,38 @@
+{
+    "name": "briefley/filament-workflow-builder",
+    "description": "A Filament plugin for scheduled workflow orchestration with pluggable step executors.",
+    "keywords": [
+        "filament",
+        "filament-plugin",
+        "laravel",
+        "workflow",
+        "scheduler"
+    ],
+    "homepage": "https://github.com/briefley/filament-workflow-builder",
+    "support": {
+        "issues": "https://github.com/briefley/filament-workflow-builder/issues",
+        "source": "https://github.com/briefley/filament-workflow-builder"
+    },
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^5.0",
+        "illuminate/console": "^11.0|^12.0|^13.0",
+        "illuminate/database": "^11.0|^12.0|^13.0",
+        "illuminate/queue": "^11.0|^12.0|^13.0",
+        "illuminate/support": "^11.0|^12.0|^13.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Briefley\\WorkflowBuilder\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Briefley\\WorkflowBuilder\\WorkflowBuilderServiceProvider"
+            ]
+        }
+    }
+}
