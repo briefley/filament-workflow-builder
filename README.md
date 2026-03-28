@@ -79,6 +79,53 @@ class SendReportStepExecutor implements WorkflowStepExecutor
 }
 ```
 
+### 1.1 Pass data from previous steps (optional)
+
+If your job needs outputs from earlier jobs in the same workflow run, implement:
+
+- `Briefley\WorkflowBuilder\Contracts\ContextAwareWorkflowStepExecutor`
+
+You will receive `WorkflowStepExecutionContext` containing succeeded previous step outputs (`meta`).
+
+```php
+<?php
+
+use Briefley\WorkflowBuilder\Contracts\ContextAwareWorkflowStepExecutor;
+use Briefley\WorkflowBuilder\DTO\StepExecutionResult;
+use Briefley\WorkflowBuilder\DTO\WorkflowStepExecutionContext;
+use Briefley\WorkflowBuilder\Models\WorkflowRunStep;
+
+class SendEmailsFromCsvStepExecutor implements ContextAwareWorkflowStepExecutor
+{
+    public function execute(WorkflowRunStep $runStep): StepExecutionResult
+    {
+        // Backward-compatible fallback when context is not available.
+        return StepExecutionResult::failed('Missing context.');
+    }
+
+    public function executeWithContext(
+        WorkflowRunStep $runStep,
+        WorkflowStepExecutionContext $context,
+    ): StepExecutionResult {
+        $csvPath = $context->latestValueForStepType('generate_fake_users_csv_job', 'csv_path');
+
+        if (! is_string($csvPath) || $csvPath === '') {
+            return StepExecutionResult::failed('CSV path not found.');
+        }
+
+        // Continue with your step logic...
+        return StepExecutionResult::succeeded();
+    }
+}
+```
+
+Helpful context methods:
+
+- `latestMetaForStepType(string $stepType): ?array`
+- `latestValueForStepType(string $stepType, string $key, mixed $default = null): mixed`
+- `metaForSequence(int $sequence): ?array`
+- `valueForSequence(int $sequence, string $key, mixed $default = null): mixed`
+
 ### 2. Return one of the supported step results
 
 Each step executor must implement:
