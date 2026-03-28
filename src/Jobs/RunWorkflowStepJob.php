@@ -2,7 +2,10 @@
 
 namespace Briefley\WorkflowBuilder\Jobs;
 
+use Briefley\WorkflowBuilder\Contracts\ContextAwareWorkflowStepExecutor;
+use Briefley\WorkflowBuilder\Contracts\WorkflowStepExecutor;
 use Briefley\WorkflowBuilder\DTO\StepExecutionResult;
+use Briefley\WorkflowBuilder\DTO\WorkflowStepExecutionContext;
 use Briefley\WorkflowBuilder\Enums\WorkflowRunStatus;
 use Briefley\WorkflowBuilder\Enums\WorkflowRunStepStatus;
 use Briefley\WorkflowBuilder\Models\WorkflowRun;
@@ -141,7 +144,7 @@ class RunWorkflowStepJob implements ShouldQueue
             }
 
             $executor = $executorRegistry->resolve($stepType);
-            $result = $executor->execute($runStep);
+            $result = $this->executeStep($executor, $runStep);
 
             $this->applyResult($run, $runStep, $result, $stepDispatcher);
         } catch (\Throwable $exception) {
@@ -197,6 +200,28 @@ class RunWorkflowStepJob implements ShouldQueue
         ])->save();
 
         $stepDispatcher->failRun($run, $runStep, $result->errorMessage ?? 'Workflow step failed.');
+    }
+
+    private function executeStep(WorkflowStepExecutor $executor, WorkflowRunStep $runStep): StepExecutionResult
+    {
+        if (! $executor instanceof ContextAwareWorkflowStepExecutor) {
+            return $executor->execute($runStep);
+        }
+
+        return $executor->executeWithContext($runStep, $this->buildExecutionContext($runStep));
+    }
+
+    private function buildExecutionContext(WorkflowRunStep $runStep): WorkflowStepExecutionContext
+    {
+        $previousSucceededRunSteps = $runStep->workflowRun
+            ->runSteps()
+            ->with('workflowStep')
+            ->where('sequence', '<', $runStep->sequence)
+            ->where('status', WorkflowRunStepStatus::SUCCEEDED->value)
+            ->orderBy('sequence')
+            ->get();
+
+        return WorkflowStepExecutionContext::fromRunSteps($previousSucceededRunSteps);
     }
 
     private function markRunning(WorkflowRun $run, WorkflowRunStep $runStep): void
