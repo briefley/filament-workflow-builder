@@ -1,12 +1,12 @@
-name: tests-main
+name: tests-v3
 
 on:
   push:
     branches:
-      - main
+      - support/filament-v3
   pull_request:
     branches:
-      - main
+      - support/filament-v3
 
 jobs:
   test:
@@ -16,18 +16,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - php: '8.1'
+            laravel: '^10.50'
+            testbench: '^8.37'
+            filament: '^3.3'
           - php: '8.2'
             laravel: '^11.50'
             testbench: '^9.17'
-            filament: '^5.0'
+            filament: '^3.3'
           - php: '8.2'
             laravel: '^12.55'
             testbench: '^10.11'
-            filament: '^5.0'
-          - php: '8.3'
-            laravel: '^13.0'
-            testbench: '^11.0'
-            filament: '^5.0'
+            filament: '^3.3'
 
     steps:
       - uses: actions/checkout@v4
