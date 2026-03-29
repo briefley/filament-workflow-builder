@@ -10,19 +10,19 @@ use Briefley\WorkflowBuilder\Filament\Resources\WorkflowResource\RelationManager
 use Briefley\WorkflowBuilder\Filament\Resources\WorkflowResource\RelationManagers\WorkflowStepsRelationManager;
 use Briefley\WorkflowBuilder\Models\Workflow;
 use Briefley\WorkflowBuilder\Models\WorkflowStep;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Schema;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
@@ -32,17 +32,17 @@ class WorkflowResource extends Resource
 {
     protected static ?string $model = Workflow::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-arrow-path';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-path';
 
-    protected static string | \UnitEnum | null $navigationGroup = 'Workflow Builder';
+    protected static ?string $navigationGroup = 'Workflow Builder';
 
     protected static ?int $navigationSort = 10;
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    public static function form(Schema $schema): Schema
+    public static function form(Form $form): Form
     {
-        return $schema->components([
+        return $form->schema([
             TextInput::make('name')
                 ->required()
                 ->maxLength(255),
@@ -104,11 +104,11 @@ class WorkflowResource extends Resource
             ->filters([
                 TernaryFilter::make('is_enabled')->label('Enabled'),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->toolbarActions([
+            ->bulkActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

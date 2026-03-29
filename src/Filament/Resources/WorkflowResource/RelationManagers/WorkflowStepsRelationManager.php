@@ -4,16 +4,17 @@ namespace Briefley\WorkflowBuilder\Filament\Resources\WorkflowResource\RelationM
 
 use Briefley\WorkflowBuilder\Filament\Resources\WorkflowResource;
 use Briefley\WorkflowBuilder\Models\WorkflowStep;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Schemas\Schema;
+use Filament\Tables\Actions\CreateAction;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rules\Unique;
 
 class WorkflowStepsRelationManager extends RelationManager
 {
@@ -21,19 +22,19 @@ class WorkflowStepsRelationManager extends RelationManager
 
     protected static ?string $title = 'Steps';
 
-    public function form(Schema $schema): Schema
+    public function form(Form $form): Form
     {
-        return $schema->components([
+        return $form->schema([
             TextInput::make('sequence')
                 ->required()
                 ->numeric()
                 ->minValue(1)
                 ->default(fn (): int => $this->nextSequence())
-                ->scopedUnique(
-                    model: WorkflowStep::class,
+                ->unique(
+                    table: WorkflowStep::class,
                     column: 'sequence',
                     ignoreRecord: true,
-                    modifyQueryUsing: fn (Builder $query): Builder => $query->where(
+                    modifyRuleUsing: fn (Unique $rule): Unique => $rule->where(
                         'workflow_id',
                         (int) $this->getOwnerRecord()->getKey(),
                     ),
@@ -68,7 +69,7 @@ class WorkflowStepsRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make(),
             ])
-            ->recordActions([
+            ->actions([
                 EditAction::make(),
                 DeleteAction::make(),
             ]);

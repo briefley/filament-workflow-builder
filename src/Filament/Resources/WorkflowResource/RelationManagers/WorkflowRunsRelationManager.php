@@ -6,8 +6,8 @@ use Briefley\WorkflowBuilder\DTO\WorkflowRunModalData;
 use Briefley\WorkflowBuilder\Enums\WorkflowRunStatus;
 use Briefley\WorkflowBuilder\Enums\WorkflowRunTriggerSource;
 use Briefley\WorkflowBuilder\Models\WorkflowRun;
-use Filament\Actions\Action;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -59,7 +59,7 @@ class WorkflowRunsRelationManager extends RelationManager
                         static fn (WorkflowRunTriggerSource $source): array => [$source->value => ucfirst($source->value)]
                     )),
             ])
-            ->recordActions([
+            ->actions([
                 Action::make('view_steps')
                     ->label('Steps')
                     ->icon('heroicon-o-list-bullet')

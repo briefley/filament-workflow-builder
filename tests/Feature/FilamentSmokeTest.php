@@ -6,7 +6,7 @@ use Briefley\WorkflowBuilder\Filament\Resources\WorkflowResource;
 use Briefley\WorkflowBuilder\Filament\Resources\WorkflowResource\RelationManagers\WorkflowRunsRelationManager;
 use Briefley\WorkflowBuilder\Filament\Resources\WorkflowResource\RelationManagers\WorkflowStepsRelationManager;
 use Briefley\WorkflowBuilder\Models\Workflow;
-use Filament\Schemas\Schema;
+use Filament\Forms\Form;
 use Illuminate\Database\QueryException;
 use ReflectionMethod;
 use Briefley\WorkflowBuilder\Tests\TestCase;
@@ -23,7 +23,7 @@ class FilamentSmokeTest extends TestCase
         ], $relations);
     }
 
-    public function test_workflow_resource_and_relation_manager_use_schema_form_api(): void
+    public function test_workflow_resource_and_relation_manager_use_form_api(): void
     {
         $resourceFormSignature = new ReflectionMethod(WorkflowResource::class, 'form');
         $resourceFormParameterType = $resourceFormSignature->getParameters()[0]->getType()?->getName();
@@ -31,8 +31,8 @@ class FilamentSmokeTest extends TestCase
         $relationManagerFormSignature = new ReflectionMethod(WorkflowStepsRelationManager::class, 'form');
         $relationManagerFormParameterType = $relationManagerFormSignature->getParameters()[0]->getType()?->getName();
 
-        $this->assertSame(Schema::class, $resourceFormParameterType);
-        $this->assertSame(Schema::class, $relationManagerFormParameterType);
+        $this->assertSame(Form::class, $resourceFormParameterType);
+        $this->assertSame(Form::class, $relationManagerFormParameterType);
     }
 
     public function test_workflow_step_sequence_is_unique_per_workflow(): void
