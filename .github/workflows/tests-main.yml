@@ -17,33 +17,34 @@ jobs:
       matrix:
         include:
           - php: '8.2'
-            laravel: '^11.50'
             testbench: '^9.17'
             filament: '^4.0'
           - php: '8.2'
-            laravel: '^12.55'
             testbench: '^10.11'
             filament: '^4.0'
           - php: '8.3'
-            laravel: '^13.0'
             testbench: '^11.0'
             filament: '^4.0'
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
+          extensions: intl, mbstring, pdo_sqlite, sqlite3
           coverage: none
+
+      - name: Pin matrix dependency versions
+        run: |
+          composer require --no-interaction --no-update \
+            orchestra/testbench:${{ matrix.testbench }} \
+            filament/filament:${{ matrix.filament }}
 
       - name: Install dependencies
         run: |
-          composer update --no-interaction --prefer-dist --with-all-dependencies \
-            laravel/framework:${{ matrix.laravel }} \
-            orchestra/testbench:${{ matrix.testbench }} \
-            filament/filament:${{ matrix.filament }}
+          composer update --no-interaction --prefer-dist --with-all-dependencies
 
       - name: Run tests
         run: composer test
