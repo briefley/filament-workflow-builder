@@ -20,6 +20,18 @@ A generic Laravel workflow orchestration package with pluggable step executors a
 | `^0.4` | `^4.0` | `^11.28 \| ^12.0 \| ^13.0` | `^8.2` | Legacy compatibility line |
 | `^0.3` | `^3.3` | `^10.45 \| ^11.0 \| ^12.0` | `^8.1 \| ^8.2` | Legacy compatibility line |
 
+## Release Lines
+
+- `^1.x` (Filament v5) is the default and latest release line.
+- `^0.4.x` is the Filament v4 maintenance line.
+- `^0.3.x` is the Filament v3 maintenance line.
+
+## Latest Tags
+
+- `1.0.3` for Filament v5 projects.
+- `0.4.1` for Filament v4 projects.
+- `0.3.1` for Filament v3 projects.
+
 ## Installation
 
 1. Require the package for your Filament major.
