@@ -12,12 +12,22 @@ A generic Laravel workflow orchestration package with pluggable step executors a
   - `Runs` relation manager for history.
   - Run steps visible in a modal from each run row.
 
+## Compatibility Matrix
+
+| Package line | Filament | Laravel | PHP | Status |
+| --- | --- | --- | --- | --- |
+| `^1.0` | `^5.0` | `^11.0 \| ^12.0 \| ^13.0` | `^8.2` | Primary line |
+| `^0.4` | `^4.0` | `^11.28 \| ^12.0 \| ^13.0` | `^8.2` | Legacy compatibility line |
+| `^0.3` | `^3.3` | `^10.45 \| ^11.0 \| ^12.0` | `^8.1 \| ^8.2` | Legacy compatibility line |
+
 ## Installation
 
-1. Require the package.
+1. Require the package for your Filament major.
 
 ```bash
-composer require briefley/filament-workflow-builder
+composer require briefley/filament-workflow-builder:^1.0 # Filament v5
+composer require briefley/filament-workflow-builder:^0.4 # Filament v4
+composer require briefley/filament-workflow-builder:^0.3 # Filament v3
 ```
 
 2. Publish config and migrations.
@@ -27,6 +37,12 @@ php artisan vendor:publish --tag=workflow-builder-config
 php artisan vendor:publish --tag=workflow-builder-migrations
 php artisan migrate
 ```
+
+## Maintenance Policy
+
+- `^1.x` (Filament v5) is the primary feature line.
+- `^0.4.x` (Filament v4) and `^0.3.x` (Filament v3) are compatibility maintenance lines.
+- New features are developed on `^1.x` first, then selectively backported when safe.
 
 ## Configuration
 
@@ -203,3 +219,11 @@ Register the plugin in your panel provider:
 ```
 
 The plugin registers only the `WorkflowResource` and manages steps/runs via relation managers.
+
+## Testing
+
+Run the package test suite:
+
+```bash
+composer test
+```
