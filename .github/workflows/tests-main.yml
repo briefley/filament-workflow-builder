@@ -1,0 +1,49 @@
+name: tests-main
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.2'
+            laravel: '^11.50'
+            testbench: '^9.17'
+            filament: '^5.0'
+          - php: '8.2'
+            laravel: '^12.55'
+            testbench: '^10.11'
+            filament: '^5.0'
+          - php: '8.3'
+            laravel: '^13.0'
+            testbench: '^11.0'
+            filament: '^5.0'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Install dependencies
+        run: |
+          composer update --no-interaction --prefer-dist --with-all-dependencies \
+            laravel/framework:${{ matrix.laravel }} \
+            orchestra/testbench:${{ matrix.testbench }} \
+            filament/filament:${{ matrix.filament }}
+
+      - name: Run tests
+        run: composer test
