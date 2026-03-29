@@ -1,12 +1,12 @@
-name: tests-main
+name: tests-v4
 
 on:
   push:
     branches:
-      - main
+      - support/filament-v4
   pull_request:
     branches:
-      - main
+      - support/filament-v4
 
 jobs:
   test:
@@ -19,15 +19,15 @@ jobs:
           - php: '8.2'
             laravel: '^11.50'
             testbench: '^9.17'
-            filament: '^5.0'
+            filament: '^4.0'
           - php: '8.2'
             laravel: '^12.55'
             testbench: '^10.11'
-            filament: '^5.0'
+            filament: '^4.0'
           - php: '8.3'
             laravel: '^13.0'
             testbench: '^11.0'
-            filament: '^5.0'
+            filament: '^4.0'
 
     steps:
       - uses: actions/checkout@v4
