@@ -2,6 +2,8 @@
 
 A generic Laravel workflow orchestration package with pluggable step executors and an optional Filament admin UI.
 
+> This branch is the Filament v3 compatibility line (`^0.3`).
+
 ## Features
 
 - Interval and fixed-time daily workflow scheduling.
