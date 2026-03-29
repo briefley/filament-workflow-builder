@@ -96,6 +96,10 @@ class RunWorkflowStepJob implements ShouldQueue
 
     public function middleware(): array
     {
+        if ($this->usesSyncQueueDriver()) {
+            return [];
+        }
+
         return [
             $this->overlapMiddleware($this->workflowOverlapKey(), $this->workflowOverlapLockTtlSeconds),
             $this->overlapMiddleware($this->stepOverlapKey(), $this->stepOverlapLockTtlSeconds),
@@ -284,6 +288,14 @@ class RunWorkflowStepJob implements ShouldQueue
         return (new WithoutOverlapping($key))
             ->releaseAfter($this->overlapReleaseAfterSeconds)
             ->expireAfter($lockTtlSeconds);
+    }
+
+    private function usesSyncQueueDriver(): bool
+    {
+        $defaultConnection = (string) config('queue.default');
+        $driver = (string) config("queue.connections.{$defaultConnection}.driver");
+
+        return $driver === 'sync';
     }
 
     /**
